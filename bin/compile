@@ -84,6 +84,12 @@ else
   status "Installing dependencies"
   npm install | indent
 
+  status "Installing Bower..."
+  npm -g install bower
+
+  status "Installing Grunt..."
+  npm -g install grunt-cli
+
   status "Caching node and node_modules for future builds"
   rm -rf $cache_dir
   mkdir -p $cache_dir
@@ -97,32 +103,24 @@ status "Building runtime environment"
 mkdir -p $build_dir/.profile.d
 echo "export PATH=\"\$HOME/vendor/node/bin:$HOME/bin:\$HOME/node_modules/.bin:\$PATH\"" > $build_dir/.profile.d/nodejs.sh
 
-
+# Install bower_components
 if [ -f $build_dir/bower.json ]; then
-  if [ ! -f $build_dir/node_modules/.bin/bower ]; then
-    status "Installing Bower..."
-    npm install bower
-  fi
-
   # Is there a .bowerrc with a custom bower_components directory?
   if [ -f $build_dir/.bowerrc ]; then
     bower_components=$(cat $build_dir/.bowerrc | $bp_dir/vendor/json directory)
+    bower_components_checksum=$(cat $build_dir/bower.json $build_dir/.bowerrc | md5sum | awk '{print $1}')
+  else
+    bower_components_checksum=$(cat $build_dir/bower.json | md5sum | awk '{print $1}')
   fi
 
   if ! test $bower_components; then
     bower_components="bower_components"
   fi
 
-  status "Bower components directory: $bower_components"
+  status "Location of bower_components: $bower_components"
 
-  # Configure cache directory
-  if [ -f $build_dir/.bowerrc ]; then
-    bower_package_checksum=$(cat $build_dir/bower.json | md5sum | awk '{print $1}')
-  else
-    bower_package_checksum=$(cat $build_dir/bower.json $build_dir/.bowerrc | md5sum | awk '{print $1}')
-  fi
-
-  bower_cache_dir="$cache_basedir/bower/$bower_package_checksum"
+  # Configure cache directory for bower_components
+  bower_cache_dir="$cache_basedir/bower/$bower_components_checksum"
 
   # Restore from cache if bower.json and .bowerrc haven't changed
   if test -d $bower_cache_dir; then
@@ -131,7 +129,7 @@ if [ -f $build_dir/bower.json ]; then
     test -d $bower_cache_dir/$bower_components && cp -r $bower_cache_dir/$bower_components $build_dir/$bower_components
   else
     status "Running bower install..."
-    $build_dir/node_modules/.bin/bower install
+    bower install
 
     status "Caching bower_components for future builds..."
     rm -rf $bower_cache_dir
@@ -140,16 +138,13 @@ if [ -f $build_dir/bower.json ]; then
     test -d $build_dir/$bower_components && cp -r $build_dir/$bower_components $bower_cache_dir/$bower_components
   fi
 else
-  status "No Bower.json found"
+  status "No bower.json found"
 fi
 
+# Run the Grunt build
 if [ -f $build_dir/grunt.js ] || [ -f $build_dir/Gruntfile.js ] || [ -f $build_dir/Gruntfile.coffee ]; then
-  if [ ! -f $build_dir/node_modules/.bin/grunt ]; then
-    status "Installing Grunt..."
-    npm install grunt-cli
-  fi
   status "Found Gruntfile, running grunt task"
-  $build_dir/node_modules/.bin/grunt
+  grunt
 else
   status "No Gruntfile (grunt.js, Gruntfile.js, Gruntfile.coffee) found"
 fi
