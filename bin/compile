@@ -90,6 +90,8 @@ else
   status "Installing Grunt..."
   npm -g install grunt-cli
 
+  chmod +x $build_dir/vendor/node/bin/*
+
   status "Caching node and node_modules for future builds"
   rm -rf $cache_dir
   mkdir -p $cache_dir
