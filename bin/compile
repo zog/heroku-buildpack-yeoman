@@ -117,10 +117,11 @@ if [ -f $build_dir/bower.json ]; then
     bower_components="bower_components"
   fi
 
-  status "Location of bower_components: $bower_components"
-
   # Configure cache directory for bower_components
   bower_cache_dir="$cache_basedir/bower/$bower_components_checksum"
+
+  status "Location of bower_components: $bower_components"
+  status "Bower cache dir: $bower_cache_dir"
 
   # Restore from cache if bower.json and .bowerrc haven't changed
   if test -d $bower_cache_dir; then
@@ -131,7 +132,7 @@ if [ -f $build_dir/bower.json ]; then
     status "Running bower install..."
     bower install
 
-    status "Caching bower_components for future builds..."
+    status "Caching bower_components in $bower_cache_dir for future builds..."
     rm -rf $bower_cache_dir
     mkdir -p $bower_cache_dir
     mkdir -p $bower_cache_dir/$bower_components
