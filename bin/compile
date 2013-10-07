@@ -107,6 +107,8 @@ echo "export PATH=\"\$HOME/vendor/node/bin:$HOME/bin:\$HOME/node_modules/.bin:\$
 
 # Install bower_components
 if [ -f $build_dir/bower.json ]; then
+  status "Detected a Bower app"
+
   # Is there a .bowerrc with a custom bower_components directory?
   if [ -f $build_dir/.bowerrc ]; then
     bower_components=$(cat $build_dir/.bowerrc | $bp_dir/vendor/json directory)
@@ -130,16 +132,18 @@ if [ -f $build_dir/bower.json ]; then
     status "bower.json and .bowerrc unchanged since last build"
     status "Restoring bower_components from cache"
     mkdir -p $build_dir/$bower_components
-    test -d $bower_cache_dir/$bower_components && cp -r $bower_cache_dir/$bower_components/ $build_dir/$bower_components/
+    test -d $bower_cache_dir/$bower_components && cp -r $bower_cache_dir/$bower_components/* $build_dir/$bower_components/
+
+    status "Contents of cache dir"
   else
     status "Running bower install..."
     bower install
 
-    status "Caching bower_components in $bower_cache_dir for future builds..."
+    status "Caching bower_components in $bower_cache_dir/$bower_components for future builds..."
     rm -rf $bower_cache_dir
     mkdir -p $bower_cache_dir
     mkdir -p $bower_cache_dir/$bower_components
-    test -d $build_dir/$bower_components && cp -r $build_dir/$bower_components/ $bower_cache_dir/$bower_components/
+    test -d $build_dir/$bower_components && cp -r $build_dir/$bower_components/* $bower_cache_dir/$bower_components/
   fi
 else
   status "No bower.json found"
