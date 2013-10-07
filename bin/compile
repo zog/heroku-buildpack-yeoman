@@ -129,7 +129,8 @@ if [ -f $build_dir/bower.json ]; then
   if test -d $bower_cache_dir; then
     status "bower.json and .bowerrc unchanged since last build"
     status "Restoring bower_components from cache"
-    test -d $bower_cache_dir/$bower_components && cp -r $bower_cache_dir/$bower_components $build_dir/$bower_components
+    mkdir -p $build_dir/$bower_components
+    test -d $bower_cache_dir/$bower_components && cp -r $bower_cache_dir/$bower_components/ $build_dir/$bower_components
   else
     status "Running bower install..."
     bower install
@@ -138,7 +139,7 @@ if [ -f $build_dir/bower.json ]; then
     rm -rf $bower_cache_dir
     mkdir -p $bower_cache_dir
     mkdir -p $bower_cache_dir/$bower_components
-    test -d $build_dir/$bower_components && cp -r $build_dir/$bower_components $bower_cache_dir/$bower_components
+    test -d $build_dir/$bower_components && cp -r $build_dir/$bower_components/ $bower_cache_dir/$bower_components
   fi
 else
   status "No bower.json found"
