@@ -105,6 +105,8 @@ status "Building runtime environment"
 mkdir -p $build_dir/.profile.d
 echo "export PATH=\"\$HOME/vendor/node/bin:$HOME/bin:\$HOME/node_modules/.bin:\$PATH\"" > $build_dir/.profile.d/nodejs.sh
 
+
+
 # Install bower_components
 if [ -f $build_dir/bower.json ]; then
   status "Detected a Bower app"
@@ -147,6 +149,14 @@ if [ -f $build_dir/bower.json ]; then
   fi
 else
   status "No bower.json found"
+fi
+
+# check for presence of compass in the package.json file
+if [ grep -q "grunt-contrib-compass" package.json ]; then
+  status "Found Compass in package.json, installing it"
+  export GEM_HOME=$BUILD_DIR/.gem/ruby/1.9.1
+  PATH="$GEM_HOME/bin:$PATH"
+  HOME=$build_dir gem install compass --user-install --no-rdoc --no-ri
 fi
 
 # Run the Grunt build
