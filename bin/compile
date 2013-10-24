@@ -152,7 +152,8 @@ else
 fi
 
 # check for presence of compass in the package.json file
-if [ grep -q "grunt-contrib-compass" package.json ]; then
+if grep -q "grunt-contrib-compass" package.json 
+then
   status "Found Compass in package.json, installing it"
   export GEM_HOME=$BUILD_DIR/.gem/ruby/1.9.1
   PATH="$GEM_HOME/bin:$PATH"
