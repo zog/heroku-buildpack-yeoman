@@ -157,6 +157,8 @@ if [ grep -q "grunt-contrib-compass" package.json ]; then
   export GEM_HOME=$BUILD_DIR/.gem/ruby/1.9.1
   PATH="$GEM_HOME/bin:$PATH"
   HOME=$build_dir gem install compass --user-install --no-rdoc --no-ri
+else
+  status "compass not present in package.json"
 fi
 
 # Run the Grunt build
