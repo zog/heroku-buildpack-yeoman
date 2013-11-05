@@ -155,8 +155,8 @@ fi
 if grep -q "grunt-contrib-compass" package.json 
 then
   status "Found Compass in package.json, installing it"
-  #install the compass gem to '.compass' in the build_dir
-  export GEM_HOME=$build_dir/.compass
+  export GEM_HOME=$(ruby -rubygems -e 'puts Gem.user_dir')
+  status "Installing comnpass to $GEM_HOME"
   # add the bin folder of the compass gem to the Path so grunt can call it 
   PATH="$GEM_HOME/bin:$PATH"
   HOME=$build_dir gem install compass --user-install --no-rdoc --no-ri
