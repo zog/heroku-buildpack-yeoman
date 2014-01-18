@@ -155,16 +155,28 @@ else
 fi
 
 # check for presence of compass in the package.json file
-if grep -q "grunt-contrib-compass" package.json 
+if grep -q "grunt-contrib-compass" package.json
 then
   status "Found Compass in package.json, installing it"
   export GEM_HOME=$build_dir/.gem/ruby/1.9.1
   status "Installing comnpass to $GEM_HOME"
-  # add the bin folder of the compass gem to the Path so grunt can call it 
+  # add the bin folder of the compass gem to the Path so grunt can call it
   PATH="$GEM_HOME/bin:$PATH"
   HOME=$build_dir gem install compass --user-install --no-rdoc --no-ri
 else
   status "compass not present in package.json"
+fi
+
+if grep -q "grunt-contrib-haml" package.json
+then
+  status "Found Haml in package.json, installing it"
+  export GEM_HOME=$build_dir/.gem/ruby/1.9.1
+  status "Installing haml to $GEM_HOME"
+  # add the bin folder of the compass gem to the Path so grunt can call it
+  PATH="$GEM_HOME/bin:$PATH"
+  HOME=$build_dir gem install haml --user-install --no-rdoc --no-ri
+else
+  status "Haml not present in package.json"
 fi
 
 # Run the Grunt build
